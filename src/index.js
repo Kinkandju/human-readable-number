@@ -1,78 +1,83 @@
 module.exports = function toReadable (number) {
-  const TEN = 10;
-	const NINETEEN = 19;
-	const HUNDRED = 100;
-	const upToTwenty = {
-		0: "zero",
-		1: "one",
-		2: "two",
-		3: "three",
-		4: "four",
-		5: "five",
-		6: "six",
-		7: "seven",
-		8: "eight",
-		9: "nine",
-		10: "ten",
-		11: "eleven",
-		12: "twelve",
-		13: "thirteen",
-		14: "fourteen",
-		15: "fifteen",
-		16: "sixteen",
-		17: "seventeen",
-		18: "eighteen",
-		19: "nineteen"
-	};
-	const upToHundred = {
-		2: "twenty",
-		3: "thirty",
-		4: "forty",
-		5: "fifty",
-		6: "sixty",
-		7: "seventy",
-		8: "eighty",
-		9: "ninety"
-	};
-	let result = "";
-
-	//Math.floor(num) - округляет число вниз и возвращает наибольшее целое число
-	let hundreds = Math.floor(number / HUNDRED); //Например, число 837 станет 8, то есть 8 сотнями
-	let dozens = Math.floor(number / TEN) - hundreds * TEN; //В данном случае получится 83 - 80 = 3, то есть 3 десятка
-	let units = number - hundreds * HUNDRED - dozens * TEN; //Чтобы найти единицы из числа вычитаем сотни и десятки, тут просто
-	let twoDigitNumber = dozens * TEN + units; //Двузначное число это сумма десятков и единиц
-
-	//Если число меньше 19
-	if (number >= 0 && number <= NINETEEN) {
-		result = upToTwenty[number];
+	const TEN = 10;
+	const TWENTY = 20;
+  	const HUNDRED = 100;
+	const numbersUpToTen = {
+		0: 'zero',
+		1: 'one',
+		2: 'two',
+		3: 'three',
+		4: 'four',
+		5: 'five',
+		6: 'six',
+		7: 'seven',
+		8: 'eight',
+		9: 'nine',
 	}
 
-	//Если число от 20 до 99
-	if (number > NINETEEN && number < HUNDRED) {
-		//Тернарный оператор. Сначала вычисляется условие(units !== 0): если оно истинно,
-		//тогда возвращается значение1(dozens + blank + units), в противном случае – значение2(upToHundred[dozens]).
-		result = (units !== 0) ? (upToHundred[dozens] + " " + upToTwenty[units]) : upToHundred[dozens];
+	const numbersUptoTwenty = {
+		10: 'ten',
+		11: 'eleven',
+		12: 'twelve',
+		13: 'thirteen',
+		14: 'fourteen',
+		15: 'fifteen',
+		16: 'sixteen',
+		17: 'seventeen',
+		18: 'eighteen',
+		19: 'nineteen',
 	}
 
-	//Если число больше 100
-	if (number >= HUNDRED) {
-		//Проверка в диапазоне от _21 до  _99, при этом последняя цифра !== 0
-		if (units !== 0 && twoDigitNumber > NINETEEN && twoDigitNumber < HUNDRED) {
-			result = upToTwenty[hundreds] + " " + "hundred" + " " + upToHundred[dozens] + " " + upToTwenty[units];
-		}
-		//Проверка в диапазоне от _21 до  _99, при этом последняя цифра === 0
-		else if (units === 0 && twoDigitNumber > NINETEEN && twoDigitNumber < HUNDRED) {
-			result = upToTwenty[hundreds] + " " + "hundred" + " " + upToHundred[dozens];
-		}
-		//Проверка в диапазоне от __0 до  _19, при этом последние 2 цифры !== 0
-		else if (0 < twoDigitNumber && twoDigitNumber <= NINETEEN) {
-			result = upToTwenty[hundreds] + " " + "hundred" + " " + upToTwenty[twoDigitNumber];
-		}
-		//Проверка сотен, при этом последние 2 цифры === 0
-		else {
-			result = upToTwenty[hundreds] + " " + "hundred";
-		}
+	const numbersDozens = {
+		20: 'twenty',
+		30: 'thirty',
+		40: 'forty',
+		50: 'fifty',
+		60: 'sixty',
+		70: 'seventy',
+		80: 'eighty',
+		90: 'ninety',
 	}
 
-	return result;
+  	// 897 -> hundreds = Math.floor(897 / 100) = Math.floor(8,97) = 8
+	let hundreds = Math.floor(number / HUNDRED); 
+  	// 897 -> dozens = Math.floor(897 / 10) - (8 * 10) = Math.floor(89,7) - 80 = 89 - 80 = 9; 
+	let dozens = Math.floor(number / TEN) - (hundreds * TEN);
+	// Multiplying tens by ten to match the object values
+	let numberDozens = dozens * TEN;
+  	// 897 -> units = 897 - (8 * 100) - (9 * 10) = 7
+	let units = number - (hundreds * HUNDRED) - (dozens * TEN);
+  	// 817 -> twoNumbers = 817 - 800 = 17
+  	let twoNumbers = number - (hundreds * HUNDRED);
+
+  	let result = '';
+
+	// 0 - 9
+  	if (number >= 0 && number < TEN) {
+    	return result = numbersUpToTen[number];
+	// 10 - 19
+  	} else if (number >= TEN && number < TWENTY) {
+    	return result = numbersUptoTwenty[number];
+	// 10 - 99, units === 0
+  	} else if ((number >= TEN && number < HUNDRED) && (units === 0)) {
+    	return result = numbersDozens[numberDozens];
+	// 10 - 99, units !== 0
+  	} else if ((number >= TEN && number < HUNDRED) && (units !== 0)) {
+    	return result = numbersDozens[numberDozens] + ' ' + numbersUpToTen[units];
+	// >= 100 && (dozens === 0) && (units === 0)
+  	} else if ((number >= HUNDRED) && (dozens === 0) && (units === 0)) {
+    	return result = numbersUpToTen[hundreds] + ' hundred';
+	// > 100 && (dozens === 0) && (units > 0 && units < 10)
+  	} else if ((number > HUNDRED) && (dozens === 0) && (units > 0 && units < TEN)) {
+    	return result = numbersUpToTen[hundreds] + ' hundred ' + numbersUpToTen[units];
+	// > 100 && (twoNumbers >= 10 && twoNumbers < 20)
+  	} else if ((number > HUNDRED) && (twoNumbers >= TEN && twoNumbers < TWENTY)) {
+    	return result = numbersUpToTen[hundreds] + ' hundred ' + numbersUptoTwenty[twoNumbers];
+	// > 100 && (dozens > 0) && (units !== 0) && (twoNumbers >= 20 && twoNumbers < 100)
+  	} else if ((number > HUNDRED) && (dozens > 0) && (units !== 0) && (twoNumbers >= TWENTY && twoNumbers < HUNDRED)) {
+    	return result = numbersUpToTen[hundreds] + ' hundred ' + numbersDozens[numberDozens] + ' ' + numbersUpToTen[units];
+	// > 100 && (dozens > 0) && (units === 0) && (twoNumbers >= 20 && twoNumbers < 100)
+  	} else if ((number > HUNDRED) && (dozens > 0) && (units === 0) && (twoNumbers >= TWENTY && twoNumbers < HUNDRED)) {
+    	return result = numbersUpToTen[hundreds] + ' hundred ' + numbersDozens[numberDozens];
+  	}
 }
